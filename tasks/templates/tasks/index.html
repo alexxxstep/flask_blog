@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Blueprint index page
+{% endblock %}
+
+{% block content_title %}
+Tasks
+{% endblock %}
+
+{% block content %}
+    {% for task in tasks %}
+        <p>
+            <a href="{{ url_for('tasks.task_detail', slug=task.slug) }}"> {{ task.title }}</a>
+        </p>
+    {% endfor %}
+{% endblock %}
