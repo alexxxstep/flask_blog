@@ -9,6 +9,12 @@ def slugify(s):
     return re.sub(pattern, '-', s.lower())
 
 
+task_tags = db.Table('task_tags',
+                     db.Column('task_id', db.Integer, db.ForeignKey('task.id')),
+                     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+                     )
+
+
 class Task(db.Model):
     # __tablename__ = 'task'
     id = db.Column(db.Integer, primary_key=True)
@@ -21,6 +27,8 @@ class Task(db.Model):
         super(Task, self).__init__(*args, **kwargs)
         self.generate_slug()
 
+    tags = db.relationship('Tag', secondary=task_tags, backref=db.backref('tasks', lazy='dynamic'))
+
     def generate_slug(self):
         if self.title:
             self.slug = slugify(self.title)
@@ -29,17 +37,29 @@ class Task(db.Model):
         return f'<Task id: {self.id}, title: {self.title}>'
 
 
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    slug = db.Column(db.String(100))
+
+    def __init__(self, *args, **kwargs):
+        super(Tag, self).__init__(*args, **kwargs)
+        self.slug = slugify(self.name)
+
+    def __repr__(self):
+        return f'Tag id: {self.id}, name: {self.name}'
+
+
 class Status(db.Model):
     # __tablename__ = 'status'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
 
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
+    def __init__(self, *args, **kwargs):
+        super(Status, self).__init__(*args, **kwargs)
 
     def __repr__(self):
-        return f'<Status id: {self.id}, title: {self.name}>'
+        return f'<Status id: {self.id}, name: {self.name}>'
 
 #
 # class Data(db.Model):
