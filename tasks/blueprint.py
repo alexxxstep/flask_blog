@@ -1,12 +1,21 @@
 from flask import Blueprint
 from flask import render_template
 from models import Task, Tag
+from flask import request
 
 tasks = Blueprint('tasks', __name__, template_folder='templates')
 
 
 @tasks.route('/')
 def index():
+
+    q = request.args.get('q')
+    if q:
+        tasks = Task.query.filter(Task.title.contains(q) | Task.body.contains(q)).all()
+    else:
+        pass
+
+
     tasks = Task.query.all()
     return render_template('tasks/index.html', tasks=tasks)
 
