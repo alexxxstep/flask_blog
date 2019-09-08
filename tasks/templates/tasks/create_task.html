@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Create new task
+{% endblock %}
+
+{% block content_title %}
+    New task
+{% endblock %}
+
+{% block content %}
+
+    <form action="{{url_for('tasks.create_task')}}" method="POST">
+
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label(class='control-label') }}
+                {{ field(class='form-control') }}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success">Create</button>
+    </form>
+
+{% endblock %}

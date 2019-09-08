@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Edit task
+{% endblock %}
+
+{% block content_title %}
+    Edit task
+{% endblock %}
+
+{% block content %}
+
+    <form action="{{url_for('tasks.edit_task', slug = task.slug)}}" method="POST">
+
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label(class='control-label') }}
+                {{ field(class='form-control') }}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success">Edit</button>
+    </form>
+
+{% endblock %}
