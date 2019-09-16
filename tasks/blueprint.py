@@ -10,6 +10,8 @@ from flask import url_for
 
 from flask_security import login_required
 
+from models import Status
+
 tasks = Blueprint('tasks', __name__, template_folder='templates')
 
 
@@ -21,8 +23,13 @@ def create_task():
         title = request.form['title']
         body = request.form['body']
 
+        status_new = Status.query.filter(Status.name == 'new').first()
+        status_id = 0
+        if status_new:
+            status_id = status_new.id
+
         try:
-            task = Task(title=title, body=body)
+            task = Task(title=title, body=body, status_id=status_id)
             db.session.add(task)
             db.session.commit()
         except:
@@ -33,10 +40,10 @@ def create_task():
     form = TaskForm()
     return render_template('tasks/create_task.html', form=form)
 
+
 @tasks.route('/<slug>/edit/', methods=['POST', 'GET'])
 @login_required
 def edit_task(slug):
-
     task = Task.query.filter(Task.slug == slug).first_or_404()
     if request.method == 'POST':
         form = TaskForm(formdata=request.form, obj=task)
@@ -51,9 +58,7 @@ def edit_task(slug):
 
 @tasks.route('/')
 def index():
-
     q = request.args.get('q')
-
     page = request.args.get('page')
 
     if page and page.isdigit():
@@ -66,21 +71,22 @@ def index():
     else:
         tasks = Task.query.order_by(Task.created.desc())
 
-    pages = tasks.paginate(page=page,per_page=5)
+    pages = tasks.paginate(page=page, per_page=5)
 
     return render_template('tasks/index.html', tasks=tasks, pages=pages)
 
+
 @tasks.route('/<slug>')
 def task_detail(slug):
-    task = Task.query.filter(Task.slug==slug).first_or_404()
+    task = Task.query.filter(Task.slug == slug).first_or_404()
     tags = task.tags
-    created =task.created.strftime("%d-%b-%Y %H:%M")
+    created = task.created.strftime("%d-%b-%Y %H:%M")
     return render_template('tasks/task_detail.html', task=task, tags=tags, created=created)
 
-#http://localhost/task/tag/python
+
+# http://localhost/task/tag/python
 @tasks.route('/tag/<slug>')
 def tag_detail(slug):
-    tag = Tag.query.filter(Tag.slug==slug).first_or_404()
+    tag = Tag.query.filter(Tag.slug == slug).first_or_404()
     tasks = tag.tasks.all()
     return render_template('tasks/tag_detail.html', tag=tag, tasks=tasks)
-

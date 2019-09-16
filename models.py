@@ -18,12 +18,13 @@ task_tags = db.Table('task_tags',
 
 
 class Task(db.Model):
-    # __tablename__ = 'task'
+    __tablename__ = 'task'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(140))
+    title = db.Column(db.String(140), nullable=False, index=True)
     slug = db.Column(db.String(140), unique=True)
     body = db.Column(db.Text)
     created = db.Column(db.DateTime, default=datetime.now())
+    status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
 
     def __init__(self, *args, **kwargs):
         super(Task, self).__init__(*args, **kwargs)
@@ -52,8 +53,11 @@ class Tag(db.Model):
         return f'{self.name}'
 
 
+status_list = ['new', 'in_work', 'finished', 'closed', 'cancelled']
+
+
 class Status(db.Model):
-    # __tablename__ = 'status'
+    __tablename__ = 'status'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
 
@@ -61,7 +65,7 @@ class Status(db.Model):
         super(Status, self).__init__(*args, **kwargs)
 
     def __repr__(self):
-        return f'<Status id: {self.id}, name: {self.name}>'
+        return f'<Status: {self.name}>'
 
 
 # FLASK SECURITY
@@ -70,12 +74,14 @@ roles_users = db.Table('roles_users',
                        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')),
                        )
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
+
 
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)

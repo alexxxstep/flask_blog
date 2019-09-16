@@ -31,7 +31,6 @@ manager.add_command('db', MigrateCommand)
 # ADMIN
 from models import *
 
-
 class AdminMixin:
     def is_accessible(self):
         return current_user.has_role('admin')
