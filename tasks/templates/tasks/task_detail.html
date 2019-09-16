@@ -6,12 +6,15 @@
 
 {% block content_title %}
     {{ task.title }}
-    <span class="badge badge-pill badge-dark">{{ created }}</span>
+
+<!--    <span class="badge badge-pill badge-dark">{{ created }}</span>-->
 
 {% endblock %}
 
 {% block content %}
-    {{ task.body }}
+    <div> created: {{ created }}</div>
+    <div>_____________________________</div>
+     <div>body: {{ task.body }} </div>
     <div class="tags">
         {% for tag in tags %}
         <a href="{{ url_for('tasks.tag_detail', slug=tag.slug) }}">

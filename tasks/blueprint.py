@@ -37,7 +37,7 @@ def create_task():
 @login_required
 def edit_task(slug):
 
-    task = Task.query.filter(Task.slug == slug).first()
+    task = Task.query.filter(Task.slug == slug).first_or_404()
     if request.method == 'POST':
         form = TaskForm(formdata=request.form, obj=task)
         form.populate_obj(task)
@@ -72,7 +72,7 @@ def index():
 
 @tasks.route('/<slug>')
 def task_detail(slug):
-    task = Task.query.filter(Task.slug==slug).first()
+    task = Task.query.filter(Task.slug==slug).first_or_404()
     tags = task.tags
     created =task.created.strftime("%d-%b-%Y %H:%M")
     return render_template('tasks/task_detail.html', task=task, tags=tags, created=created)
@@ -80,7 +80,7 @@ def task_detail(slug):
 #http://localhost/task/tag/python
 @tasks.route('/tag/<slug>')
 def tag_detail(slug):
-    tag = Tag.query.filter(Tag.slug==slug).first()
+    tag = Tag.query.filter(Tag.slug==slug).first_or_404()
     tasks = tag.tasks.all()
     return render_template('tasks/tag_detail.html', tag=tag, tasks=tasks)
 
